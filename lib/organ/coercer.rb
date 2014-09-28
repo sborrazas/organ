@@ -1,3 +1,5 @@
+require "date"
+
 module Organ
   module Coercer
 
@@ -124,7 +126,7 @@ module Organ
     #
     # @api semipublic
     def coerce_date(value, options = {})
-      value = coerce(value, String)
+      value = coerce_string(value)
       begin
         Date.strptime(value, "%Y-%m-%d")
       rescue ArgumentError

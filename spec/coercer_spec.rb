@@ -97,4 +97,18 @@ describe Organ::Coercer do
     end
   end
 
+  describe "#coerce_date" do
+    describe "when value doesn't have a date format" do
+      it "returns nil" do
+        assert_nil(coercer.coerce_date("not a date"))
+      end
+    end
+
+    describe "when value has a date format" do
+      it "returns a date" do
+        assert_equal(Date.civil(2014, 9, 28), coercer.coerce_date("2014-09-28"))
+      end
+    end
+  end
+
 end
