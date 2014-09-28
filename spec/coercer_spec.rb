@@ -42,7 +42,7 @@ describe Organ::Coercer do
     end
   end
 
-  describe "coerce_array" do
+  describe "#coerce_array" do
     describe "when value is an array" do
       describe "when no :element_type option is given" do
         it "returns the array" do

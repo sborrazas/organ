@@ -9,12 +9,11 @@ Gem::Specification.new do |s|
 
   s.files = Dir[
     "LICENSE",
-    "CHANGELOG",
     "README.md",
     "Rakefile",
     "lib/**/*.rb",
     "*.gemspec",
-    "test/*.*"
+    "spec/*.*"
   ]
 
   s.require_paths = ["lib"]
