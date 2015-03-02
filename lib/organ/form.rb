@@ -119,12 +119,14 @@ module Organ
     #
     # @api public
     def perform!
-      if valid?
+      return_value = if valid?
         perform
       end
       if errors.any?
         raise Organ::ValidationError.new(errors)
       end
+
+      return_value
     end
 
   end

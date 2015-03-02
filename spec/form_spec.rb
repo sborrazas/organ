@@ -77,15 +77,26 @@ describe Organ::Form do
         attribute(:username)
         attribute(:password)
 
+        def initialize(return_value)
+          @return_value = return_value
+        end
+
         def validate
         end
 
         def perform
+          @return_value
         end
+
       end
     end
 
-    let(:form) { form_klass.new }
+    let(:return_value) { 188 }
+    let(:form) { form_klass.new(return_value) }
+
+    it "returns what #perform returns" do
+      assert_equal(return_value, form.perform!)
+    end
 
     describe "if no errors during validate or perform" do
       it "doesn't raise any exceptions" do
