@@ -24,11 +24,15 @@ module Organ
     # Corce the value into true or false.
     #
     # @param value [Object]
+    # @option options [Regexp] :pattern (nil)
+    #   Try to match regexp pattern with passed value
+    #   and cast to Boolean this match.
     #
     # @return [Boolean]
     #
     # @api semipublic
     def coerce_boolean(value, options = {})
+      value = value =~ options[:pattern] if options.has_key?(:pattern)
       !!value
     end
 
@@ -120,6 +124,9 @@ module Organ
     #
     # @param value [Object]
     #   The value to be coerced.
+    # @option options [String] :format ("%Y-%m-%d")
+    #   Allow send format to parse date.
+    #   See http://ruby-doc.org/stdlib-2.1.1/libdoc/date/rdoc/Date.html#method-i-strftime
     #
     # @return [Date, nil]
     #   A Date if the value can be coerced or nil otherwise.
@@ -128,7 +135,7 @@ module Organ
     def coerce_date(value, options = {})
       value = coerce_string(value)
       begin
-        Date.strptime(value, "%Y-%m-%d")
+        Date.strptime(value, options.fetch(:format, "%Y-%m-%d"))
       rescue ArgumentError
         nil
       end
