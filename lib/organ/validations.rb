@@ -56,14 +56,14 @@ module Organ
     # @api public
     def validate_presence(attribute_name)
       value = send(attribute_name)
-      if !value || value.to_s.empty?
+      unless present?(value)
         append_error(attribute_name, :blank)
       end
     end
 
-    # Validate the uniqueness of the attribute value. The uniqueness is
-    # determined by the block given. If the value is not unique, append the
-    # :taken error to the attribute.
+    # Validate the uniqueness of the attribute value (if present). The
+    # uniqueness is determined by the block given. If the value is not unique,
+    # append the :taken error to the attribute.
     #
     # @param attribute_name [Symbol]
     # @param block [Proc]
@@ -73,13 +73,13 @@ module Organ
     # @api public
     def validate_uniqueness(attribute_name, &block)
       value = send(attribute_name)
-      unless block.call(value)
+      if present?(value) && !block.call(value)
         append_error(attribute_name, :taken)
       end
     end
 
-    # Validate the email format. If the value does not match the email format,
-    # append the :invalid error to the attribute.
+    # Validate the email format (if present). If the value does not match the
+    # email format, append the :invalid error to the attribute.
     #
     # @param attribute_name [Symbol]
     #
@@ -88,8 +88,8 @@ module Organ
       validate_format(attribute_name, EMAIL_FORMAT)
     end
 
-    # Validate the format of the attribute value. If the value does not match
-    # the regexp given, append :invalid error to the attribute.
+    # Validate the format of the attribute value (if present). If the value does
+    # not match the regexp given, append :invalid error to the attribute.
     #
     # @param attribute_name [Symbol]
     # @param format [Regexp]
@@ -97,15 +97,15 @@ module Organ
     # @api public
     def validate_format(attribute_name, format)
       value = send(attribute_name)
-      if value && !(format =~ value)
+      if present?(value) && !(format =~ value)
         append_error(attribute_name, :invalid)
       end
     end
 
     # Validate the length of a String, Array or any other form attribute which
-    # responds to #size. If the value is too short, append the :too_short
-    # error to the attribute. If the value is too long append the :too_long
-    # error to the attribute.
+    # responds to #size (if present). If the value is too short, append the
+    # :too_short error to the attribute. If the value is too long append the
+    # :too_long error to the attribute.
     #
     # @param attribute_name [Symbol]
     # @option options [Integer, nil] :min (nil)
@@ -117,7 +117,7 @@ module Organ
       max = options.fetch(:max, nil)
       value = send(attribute_name)
 
-      if value
+      if present?(value)
         length = value.size
         if min && length < min
           append_error(attribute_name, :too_short)
@@ -128,9 +128,9 @@ module Organ
       end
     end
 
-    # Validate the value of the given attribute is included in the list. If
-    # the value is not included in the list, append the :not_included error to
-    # the attribute.
+    # Validate the value of the given attribute is included in the list (if
+    # present). If the value is not included in the list, append the
+    # :not_included error to the attribute.
     #
     # @param attribute_name [Symbol]
     # @param attribute_name [Symbol]
@@ -139,14 +139,14 @@ module Organ
     # @api public
     def validate_inclusion(attribute_name, list)
       value = send(attribute_name)
-      if value && !list.include?(value)
+      if present?(value) && !list.include?(value)
         append_error(attribute_name, :not_included)
       end
     end
 
-    # Validate the range in which the attribute can be. If the value is less
-    # than the min a :less_than_min error will be appended. If the value is
-    # greater than the max a :greater_than_max error will be appended.
+    # Validate the range in which the attribute can be (if present). If the
+    # value is less than the min a :less_than_min error will be appended. If the
+    # value is greater than the max a :greater_than_max error will be appended.
     #
     # @param attribute_name [Symbol]
     # @option options [Integer] :min (nil)
@@ -158,12 +158,23 @@ module Organ
     def validate_range(attribute_name, options = {})
       value = send(attribute_name)
 
-      return unless value
+      return unless present?(value)
 
       min = options.fetch(:min, nil)
       max = options.fetch(:max, nil)
       append_error(attribute_name, :less_than) if min && value < min
       append_error(attribute_name, :greater_than) if max && value > max
+    end
+
+    # Determine if the value is present (not nil, false or an empty string).
+    #
+    # @param value [Object]
+    #
+    # @return [Boolean]
+    #
+    # @api private
+    def present?(value)
+      value && !value.to_s.empty?
     end
 
   end

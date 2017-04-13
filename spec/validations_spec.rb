@@ -50,7 +50,7 @@ describe Organ::Validations do
 
   describe "#validate_presence" do
     describe "when attribute has nil value" do
-      it "appends an error" do
+      it "appends a :blank error" do
         validator.validate_presence(:username)
         assert_includes(validator.errors[:username], :blank)
         assert_equal(1, validator.errors[:username].size)
@@ -60,7 +60,7 @@ describe Organ::Validations do
     describe "when attribute has empty string value" do
       let(:username_value) { "" }
 
-      it "appends an error" do
+      it "appends a :blank error" do
         validator.validate_presence(:username)
         assert_includes(validator.errors[:username], :blank)
         assert_equal(1, validator.errors[:username].size)
@@ -70,46 +70,96 @@ describe Organ::Validations do
 
   describe "#validate_uniqueness" do
     describe "when block returns false" do
-      it "appends a :taken error" do
-        validator.validate_uniqueness(:username) { |u| false }
-        assert_includes(validator.errors[:username], :taken)
-        assert_equal(1, validator.errors[:username].size)
+      describe "when value is not present" do
+        let(:username_value) { nil }
+
+        it "doesn't append any error" do
+          validator.validate_uniqueness(:username) { |u| false }
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { "username" }
+
+        it "appends a :taken error" do
+          validator.validate_uniqueness(:username) { |u| false }
+          assert_includes(validator.errors[:username], :taken)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
   end
 
   describe "#validate_email_format" do
     describe "when value is not an email" do
-      let(:username_value) { "not.an@email" }
+      describe "when value is not present" do
+        let(:username_value) { nil }
 
-      it "appends an :invalid error" do
-        validator.validate_email_format(:username)
-        assert_includes(validator.errors[:username], :invalid)
-        assert_equal(1, validator.errors[:username].size)
+        it "doesn't append any error" do
+          validator.validate_email_format(:username)
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { "not.an@email" }
+
+        it "appends an :invalid error" do
+          validator.validate_email_format(:username)
+          assert_includes(validator.errors[:username], :invalid)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
   end
 
   describe "#validate_format" do
     describe "when value does not match the regexp" do
-      let(:username_value) { "ema8l" }
+      describe "when value is not present" do
+        let(:username_value) { nil }
 
-      it "appends an :invalid error" do
-        validator.validate_format(:username, /\A[a-z]+\Z/)
-        assert_includes(validator.errors[:username], :invalid)
-        assert_equal(1, validator.errors[:username].size)
+        it "doesn't append any error" do
+          validator.validate_format(:username, /\A[a-z]+\Z/)
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { "ema8l" }
+
+        it "appends an :invalid error" do
+          validator.validate_format(:username, /\A[a-z]+\Z/)
+          assert_includes(validator.errors[:username], :invalid)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
   end
 
   describe "#validate_length" do
     describe "when value size is less than the min" do
-      let(:username_value) { "ema8l" }
+      describe "when value is not present" do
+        let(:username_value) { nil }
 
-      it "appends a :too_short error" do
-        validator.validate_length(:username, :min => 8)
-        assert_includes(validator.errors[:username], :too_short)
-        assert_equal(1, validator.errors[:username].size)
+        it "doesn't append any error" do
+          validator.validate_length(:username, :min => 8)
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { "ema8l" }
+
+        it "appends a :too_short error" do
+          validator.validate_length(:username, :min => 8)
+          assert_includes(validator.errors[:username], :too_short)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
 
@@ -126,24 +176,48 @@ describe Organ::Validations do
 
   describe "#validate_inclusion" do
     describe "when is not included in the list" do
-      let(:username_value) { 1 }
+      describe "when value is not present" do
+        let(:username_value) { nil }
 
-      it "appends a :not_included error" do
-        validator.validate_inclusion(:username, [2, 3])
-        assert_includes(validator.errors[:username], :not_included)
-        assert_equal(1, validator.errors[:username].size)
+        it "doesn't append any error" do
+          validator.validate_inclusion(:username, [2, 3])
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { 1 }
+
+        it "appends a :not_included error" do
+          validator.validate_inclusion(:username, [2, 3])
+          assert_includes(validator.errors[:username], :not_included)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
   end
 
   describe "#validate_range" do
     describe "when value is less than the min" do
-      let(:username_value) { 5 }
+      describe "when value is not present" do
+        let(:username_value) { nil }
 
-      it "appends a :less_than error" do
-        validator.validate_range(:username, :min => 8)
-        assert_includes(validator.errors[:username], :less_than)
-        assert_equal(1, validator.errors[:username].size)
+        it "doesn't append any error" do
+          validator.validate_range(:username, :min => 8)
+
+          assert_equal(0, validator.errors[:username].size)
+        end
+      end
+
+      describe "when value is present" do
+        let(:username_value) { 5 }
+
+        it "appends a :less_than error" do
+          validator.validate_range(:username, :min => 8)
+          assert_includes(validator.errors[:username], :less_than)
+          assert_equal(1, validator.errors[:username].size)
+        end
       end
     end
 
