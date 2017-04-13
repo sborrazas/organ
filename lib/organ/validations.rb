@@ -39,6 +39,15 @@ module Organ
       errors[attribute_name] << error
     end
 
+    # Call the given block if there are no errors.
+    #
+    # @param block [Proc]
+    #
+    # @api public
+    def validation_block(&block)
+      block.call if errors.empty?
+    end
+
     # Validate the presence of the attribute value. If the value is nil or
     # false append a :blank error to the attribute.
     #

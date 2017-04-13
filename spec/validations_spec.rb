@@ -158,4 +158,36 @@ describe Organ::Validations do
     end
   end
 
+  describe "#validation_block" do
+    describe "when form has no errors" do
+      let(:username_value) { "validusername" }
+
+      it "calls the given block" do
+        validator.validate_presence(:username)
+
+        block_called = 0
+
+        validator.validation_block do
+          block_called += 1
+        end
+
+        assert_equal(1, block_called)
+      end
+    end
+
+    describe "when form has errors" do
+      it "doesn't call the given block" do
+        validator.validate_presence(:username)
+
+        block_called = 0
+
+        validator.validation_block do
+          block_called += 1
+        end
+
+        assert_equal(0, block_called)
+      end
+    end
+  end
+
 end

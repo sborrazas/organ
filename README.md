@@ -176,6 +176,22 @@ appends a `:greater_than` error to the attribute. Example:
 validate_range(:age, :min => 18)
 ```
 
+### validation_block
+
+This is a helper method that only calls the given block if the form doesn't have
+any errors. This is particularly useful when some of the validations are costly
+to make and unnecessary if the form already has errors.
+
+```ruby
+validate_length(:username, :min => 7)
+
+validation_block do # Will only get called if previous validation passed
+  validate_uniqueness(:username) do |username|
+    User.where(:username => username).empty?
+  end
+end
+```
+
 Extensions
 ----------
 
