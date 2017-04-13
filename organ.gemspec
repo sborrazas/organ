@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = "organ"
-  s.version = "0.0.3"
+  s.version = "0.1.0"
   s.summary = "Forms with integrated validations and attribute coercing."
   s.description = "A small library for manipulating form-based data with validations and attributes coercion."
   s.authors = ["Sebastian Borrazas"]
